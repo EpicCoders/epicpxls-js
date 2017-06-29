@@ -1,7 +1,16 @@
+/*!
+ * epicpxls.js v0.5
+ * https://www.epicpxls.com
+ *
+ * Copyright EpicCoders, S.R.L.
+ *
+ */
+
 function init_buttons() {
   var iframe_wrap = document.createElement('div');
   var iframe = document.createElement('iframe');
   var loading = document.createElement('img');
+  var documentOverflow = '';
 
   function saveDocumentOverflow() {
     if (document.currentStyle) {
@@ -62,8 +71,8 @@ function init_buttons() {
     }
     href = href.replace(/\/$/, '');
 
-    var id = href.substring(href.indexOf('/items/') + 7).split('/')[0]
-    href = href.substring(0, href.indexOf('/items/') + 7) + id
+    var id = href.substring(href.indexOf('/items/') + 7).split('/')[0];
+    href = href.substring(0, href.indexOf('/items/') + 7) + id;
 
     iframe.setAttribute('src', href + '/iframe/');
     iframe.style.width = '100%';
@@ -105,7 +114,7 @@ function init_buttons() {
   if (typeof window.btns === 'undefined') {
     window.btns = [];
   }
-  for (i = 0; i < allHTMLTags.length; i++) {
+  for (var i = 0; i < allHTMLTags.length; i++) {
     var classes = allHTMLTags[i].className.toString().split(' ');
     if (classes[0] === 'buy-button') {
       var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
