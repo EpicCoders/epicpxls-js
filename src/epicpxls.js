@@ -116,7 +116,7 @@ function init_buttons() {
   }
   for (var i = 0; i < allHTMLTags.length; i++) {
     var classes = allHTMLTags[i].className.toString().split(' ');
-    if (classes[0] === 'buy-button') {
+    if (classes[0] === 'epicpxls-buy-button') {
       var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
       if (!activated) {
         allHTMLTags[i].className += ' activated';
@@ -142,7 +142,7 @@ function init_buttons() {
     }
     var id = url.substring(url.indexOf('/items/') + 7).split('/')[0];
     url = url.substring(0, url.indexOf('/items/') + 1);
-    if (id !== 'undefined' && button.className.indexOf('buy-button-custom') === -1) {
+    if (id !== 'undefined' && button.className.indexOf('epicpxls-buy-button-custom') === -1) {
       var bW = 200,
           bH = 42;
       button.style.width = bW + 'px';
