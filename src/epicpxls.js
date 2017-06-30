@@ -116,7 +116,7 @@ function init_buttons() {
   }
   for (var i = 0; i < allHTMLTags.length; i++) {
     var classes = allHTMLTags[i].className.toString().split(' ');
-    if (classes[0] === 'epicpxls-buy-button') {
+    if (['epicpxls-buy-button', 'epicpxls-buy-button-custom'].indexOf(classes[0]) !== -1) {
       var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
       if (!activated) {
         allHTMLTags[i].className += ' activated';
