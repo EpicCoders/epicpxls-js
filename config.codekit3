@@ -9,6 +9,12 @@
 	],
 "creatorBuild": "25849",
 "files": {
+	"\/build\/.gitignore": {
+		"ft": 8192,
+		"oA": 2,
+		"oAP": "\/build\/.gitignore",
+		"oF": 0
+		},
 	"\/dist\/epicpxls-min.js": {
 		"ft": 64,
 		"mi": 1,
@@ -66,7 +72,8 @@
 	"creationDate": 520424751,
 	"displayValue": "epicpxls-js",
 	"displayValueWasSetByUser": 0,
-	"iconImageName": "meme-angryBaby"
+	"iconImageName": "meme-angryBaby",
+	"lastBuiltDate": 521455137
 	},
 "projectSettings": {
 	"abortBuildOnError": 1,
