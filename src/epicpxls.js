@@ -56,6 +56,14 @@ function init_buttons() {
       if (event.data === 'close_frame') {
         close_frame();
       }
+      if (event.data.product_type === 'external_product') {
+        window.open(event.data.external_url, '_blank');
+        var iframe_wrap = document.getElementById('iframe_wrap');
+        var load = document.getElementById('loading');
+        document.body.removeChild(iframe_wrap);
+        // the loader is already removed if user logged in just before the download started, remove it if it's still there
+        if (load != null){ document.body.removeChild(load); }
+      }
     });
   } else {
     window.attachEvent('message', function(event) {
@@ -91,7 +99,7 @@ function init_buttons() {
         document.body.removeChild(load);
       }
     };
-    iframe_wrap.id = 'iframe_wrap_div';
+    iframe_wrap.id = 'iframe_wrap';
     iframe_wrap.style.width = '100%';
     iframe_wrap.style.height = '100%';
     iframe_wrap.style.top = '0';
@@ -109,7 +117,7 @@ function init_buttons() {
     setTimeout(function(){
       var load = document.getElementById('loading');
       var iframe = document.getElementsByTagName('iframe')[0]
-      var iframe_wrap = document.getElementById('iframe_wrap_div');
+      var iframe_wrap = document.getElementById('iframe_wrap');
       try{
         if (iframe.contentDocument.body.innerHTML === ''){
           document.body.removeChild(load);
