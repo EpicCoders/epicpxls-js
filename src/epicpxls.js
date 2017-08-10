@@ -22,6 +22,13 @@ function showLoading() {
   document.body.appendChild(loading);
 }
 
+function hide_loading(){
+  var load = document.getElementById('loading');
+  if (load) {
+    document.body.removeChild(load);
+  }
+}
+
 function init_buttons() {
   var iframe_wrap = document.createElement('div');
   var iframe = document.createElement('iframe');
@@ -48,6 +55,7 @@ function init_buttons() {
     if (document.body.contains(iframe_wrap)) {
       document.body.removeChild(iframe_wrap);
     }
+    hide_loading();
     setDocumentOverflow();
   }
 
@@ -73,6 +81,23 @@ function init_buttons() {
     });
   }
 
+  function check_iframe_download(){
+    // we are adding here a small piece of code to check if the
+    // iframe that loaded is empty. That usually means that
+    // we are directly downloading the zip file
+    // if we are doing that then we can safely close the iframe
+    setTimeout(function () {
+      try {
+        if (iframe.contentDocument.body.innerHTML === '') {
+          close_frame();
+        }
+      } catch (error) {
+        // we have a paid product and we can't access the content body of the iframe
+        // Note: You can't access an <iframe> with Javascript, it would be a huge security flaw if you could do it. For the same-origin policy browsers block scripts trying to access a frame with a different origin.
+      }
+    }, 1000);
+  }
+
   function show_iframe(e) {
     e.preventDefault();
     showLoading();
@@ -94,10 +119,7 @@ function init_buttons() {
     iframe.style.border = 'none';
     iframe.onload = function() {
       this.style.visibility = 'visible';
-      var load = document.getElementById('loading');
-      if (load) {
-        document.body.removeChild(load);
-      }
+      hide_loading();
     };
     iframe_wrap.id = 'iframe_wrap';
     iframe_wrap.style.width = '100%';
@@ -112,22 +134,8 @@ function init_buttons() {
     iframe_wrap.style.WebkitOverflowScrolling = 'touch';
     document.body.appendChild(iframe_wrap);
     iframe_wrap.appendChild(iframe);
-
-    // we need to remove the loader and the wrapping div in case the product is free
-    setTimeout(function(){
-      var load = document.getElementById('loading');
-      var iframe = document.getElementsByTagName('iframe')[0]
-      var iframe_wrap = document.getElementById('iframe_wrap');
-      try{
-        if (iframe.contentDocument.body.innerHTML === ''){
-          document.body.removeChild(load);
-          document.body.removeChild(iframe_wrap);
-        }
-      } catch(error){
-        // we have a paid product and we can't access the content body of the iframe
-        // Note: You can't access an <iframe> with Javascript, it would be a huge security flaw if you could do it. For the same-origin policy browsers block scripts trying to access a frame with a different origin.
-      }
-    }, 1000);
+    // check for iframe download
+    check_iframe_download();
     setDocumentOverflow('hidden');
     return false;
   }
@@ -181,7 +189,7 @@ function init_buttons() {
       var ifr = button.getElementsByTagName('iframe')[0],
           invDiv = document.createElement('div');
 
-      ifr.src = url + 'items/' + id + '/buttons';
+      ifr.src = url + 'items/' + id + '/button';
       invDiv.style.width = '200px';
       invDiv.style.height = '50px';
       invDiv.style.position = 'absolute';
