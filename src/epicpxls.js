@@ -1,5 +1,5 @@
 /*!
- * epicpxls.js v0.5
+ * epicpxls.js v0.7
  * https://www.epicpxls.com
  *
  * Copyright EpicCoders, S.R.L.
