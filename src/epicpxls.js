@@ -65,12 +65,14 @@ function init_buttons() {
         close_frame();
       }
       if (event.data.product_type === 'external_product') {
-        window.open(event.data.external_url, '_blank');
         var iframe_wrap = document.getElementById('iframe_wrap');
         var load = document.getElementById('loading');
         document.body.removeChild(iframe_wrap);
         // the loader is already removed if user logged in just before the download started, remove it if it's still there
-        if (load != null){ document.body.removeChild(load); }
+        if (load !== null) { document.body.removeChild(load); }
+        // now we are redirecting in case it's an external product
+        // we are only hiding the above untilt the redirect happens
+        window.location = event.data.external_url;
       }
     });
   } else {
