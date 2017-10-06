@@ -23,18 +23,33 @@ function showLoading() {
   document.body.appendChild(loading);
 }
 
-function hide_loading(){
+function hideLoading(){
   var load = document.getElementById('loading');
   if (load) {
     document.body.removeChild(load);
   }
 }
 
-function init_buttons() {
+// add this function here to allow paypal to work
+// it will not work if it's not in the parent page
+function addCheckout(){
+  var head = document.getElementsByTagName('head')[0];
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.id = 'braintree-dropin-paypal-checkout-script';
+  script.async = 1;
+  script.dataLogLevel = 'warn';
+  script.src = 'https://www.paypalobjects.com/api/checkout.4.0.130.min.js';
+  head.appendChild(script);
+}
+
+function initButtons() {
   var iframe_wrap = document.createElement('div');
   var iframe = document.createElement('iframe');
   var documentOverflow = '';
+  var allHTMLTags = document.getElementsByTagName('*');
 
+  // save overflow for later
   function saveDocumentOverflow() {
     if (document.currentStyle) {
       documentOverflow = document.documentElement.currentStyle.overflowY;
@@ -45,6 +60,7 @@ function init_buttons() {
     }
   }
 
+  // set overflow that we need
   function setDocumentOverflow(value) {
     if (typeof value === 'undefined') {
       value = documentOverflow;
@@ -52,39 +68,60 @@ function init_buttons() {
     document.documentElement.style.overflowY = value;
   }
 
-  function close_frame() {
+  // add event listeners for closing iframes
+  function initEventListener() {
+    if (window.addEventListener) {
+      window.addEventListener('message', function(event) {
+        if (event.data === 'close_frame') {
+          closeFrame();
+        }
+        if (event.data.product_type === 'external_product') {
+          var iframe_wrap = document.getElementById('iframe_wrap');
+          var load = document.getElementById('loading');
+          document.body.removeChild(iframe_wrap);
+          // the loader is already removed if user logged in just before the download started, remove it if it's still there
+          if (load !== null) { document.body.removeChild(load); }
+          // now we are redirecting in case it's an external product
+          // we are only hiding the above untilt the redirect happens
+          window.location = event.data.external_url;
+        }
+      });
+    } else {
+      window.attachEvent('message', function(event) {
+        if (event.data === 'close_frame') {
+          closeFrame();
+        }
+      });
+    }
+  }
+
+  // attach events to buttons that have our classes
+  function attachEventsToButtons(){
+    if (typeof window.btns === 'undefined') {
+      window.btns = [];
+    }
+    for (var i = 0; i < allHTMLTags.length; i++) {
+      var classes = allHTMLTags[i].className.toString().split(' ');
+      if (['epicpxls-buy-button', 'epicpxls-buy-button-custom'].indexOf(classes[0]) !== -1) {
+        var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
+        if (!activated) {
+          allHTMLTags[i].className += ' activated';
+          window.btns.push(allHTMLTags[i]);
+        }
+      }
+    }
+  }
+
+  // close the frame when this is called
+  function closeFrame() {
     if (document.body.contains(iframe_wrap)) {
       document.body.removeChild(iframe_wrap);
     }
-    hide_loading();
+    hideLoading();
     setDocumentOverflow();
   }
 
-  if (window.addEventListener) {
-    window.addEventListener('message', function(event) {
-      if (event.data === 'close_frame') {
-        close_frame();
-      }
-      if (event.data.product_type === 'external_product') {
-        var iframe_wrap = document.getElementById('iframe_wrap');
-        var load = document.getElementById('loading');
-        document.body.removeChild(iframe_wrap);
-        // the loader is already removed if user logged in just before the download started, remove it if it's still there
-        if (load !== null) { document.body.removeChild(load); }
-        // now we are redirecting in case it's an external product
-        // we are only hiding the above untilt the redirect happens
-        window.location = event.data.external_url;
-      }
-    });
-  } else {
-    window.attachEvent('message', function(event) {
-      if (event.data === 'close_frame') {
-        close_frame();
-      }
-    });
-  }
-
-  function check_iframe_download(){
+  function checkIframeDownload(){
     // we are adding here a small piece of code to check if the
     // iframe that loaded is empty. That usually means that
     // we are directly downloading the zip file
@@ -92,7 +129,7 @@ function init_buttons() {
     setTimeout(function () {
       try {
         if (iframe.contentDocument.body.innerHTML === '') {
-          close_frame();
+          closeFrame();
         }
       } catch (error) {
         // we have a paid product and we can't access the content body of the iframe
@@ -101,7 +138,7 @@ function init_buttons() {
     }, 1000);
   }
 
-  function show_iframe(e) {
+  function showIframe(e) {
     e.preventDefault();
     showLoading();
     var href = e.currentTarget.getAttribute('data-href');
@@ -122,7 +159,7 @@ function init_buttons() {
     iframe.style.border = 'none';
     iframe.onload = function() {
       this.style.visibility = 'visible';
-      hide_loading();
+      hideLoading();
     };
     iframe_wrap.id = 'iframe_wrap';
     iframe_wrap.style.width = '100%';
@@ -138,31 +175,15 @@ function init_buttons() {
     document.body.appendChild(iframe_wrap);
     iframe_wrap.appendChild(iframe);
     // check for iframe download
-    check_iframe_download();
+    checkIframeDownload();
     setDocumentOverflow('hidden');
     return false;
   }
 
-  function post_message(btn, message) {
+  function postMessage(btn, message) {
     var ifr = btn.getElementsByTagName('iframe')[0];
     if(ifr) {
       ifr.contentWindow.postMessage(message, '*');
-    }
-  }
-
-  saveDocumentOverflow();
-  var allHTMLTags = document.getElementsByTagName('*');
-  if (typeof window.btns === 'undefined') {
-    window.btns = [];
-  }
-  for (var i = 0; i < allHTMLTags.length; i++) {
-    var classes = allHTMLTags[i].className.toString().split(' ');
-    if (['epicpxls-buy-button', 'epicpxls-buy-button-custom'].indexOf(classes[0]) !== -1) {
-      var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
-      if (!activated) {
-        allHTMLTags[i].className += ' activated';
-        window.btns.push(allHTMLTags[i]);
-      }
     }
   }
 
@@ -202,12 +223,12 @@ function init_buttons() {
       button.appendChild(invDiv);
     }
     if (button.className.indexOf('in-new-page') === -1) {
-      button.addEventListener('click', show_iframe, false);
+      button.addEventListener('click', showIframe, false);
       button.addEventListener('mouseover', function() {
-        post_message(button, 'button_hover');
+        postMessage(button, 'button_hover');
       }, false);
       button.addEventListener('mouseout', function() {
-        post_message(button, 'button_blur');
+        postMessage(button, 'button_blur');
       }, false);
     }
     button.style.position = 'relative';
@@ -215,6 +236,16 @@ function init_buttons() {
     button.style.display = 'inline-block';
     loadBtn();
   }
-  loadBtn();
+
+  function init(){
+    // we use this just to call all functions on load
+    initEventListener();
+    attachEventsToButtons();
+    saveDocumentOverflow();
+    loadBtn();
+    addCheckout();
+  }
+
+  init();
 }
-init_buttons();
+initButtons();
