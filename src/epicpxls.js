@@ -19,7 +19,7 @@ function showLoading() {
   loading.style.borderRadius = '50%';
   loading.style.margin = '-21px 0 0 -21px';
   loading.style.boxShadow = '0px 0px 10px #ccc';
-  loading.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+  loading.style.backgroundColor = 'rgba(255, 255, 255, 1)';
   document.body.appendChild(loading);
 }
 
@@ -38,7 +38,7 @@ function addCheckout(){
   script.type = 'text/javascript';
   script.id = 'braintree-dropin-paypal-checkout-script';
   script.async = 1;
-  script.dataLogLevel = 'warn';
+  script.setAttribute('data-log-level', 'warn');
   script.src = 'https://www.paypalobjects.com/api/checkout.4.0.130.min.js';
   head.appendChild(script);
 }
