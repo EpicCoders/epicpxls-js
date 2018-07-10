@@ -121,23 +121,6 @@ function initButtons() {
     setDocumentOverflow();
   }
 
-  function checkIframeDownload(){
-    // we are adding here a small piece of code to check if the
-    // iframe that loaded is empty. That usually means that
-    // we are directly downloading the zip file
-    // if we are doing that then we can safely close the iframe
-    setTimeout(function () {
-      try {
-        if (iframe.contentDocument.body.innerHTML === '') {
-          closeFrame();
-        }
-      } catch (error) {
-        // we have a paid product and we can't access the content body of the iframe
-        // Note: You can't access an <iframe> with Javascript, it would be a huge security flaw if you could do it. For the same-origin policy browsers block scripts trying to access a frame with a different origin.
-      }
-    }, 1000);
-  }
-
   function showIframe(e) {
     e.preventDefault();
     showLoading();
@@ -174,8 +157,6 @@ function initButtons() {
     iframe_wrap.style.WebkitOverflowScrolling = 'touch';
     document.body.appendChild(iframe_wrap);
     iframe_wrap.appendChild(iframe);
-    // check for iframe download
-    checkIframeDownload();
     setDocumentOverflow('hidden');
     return false;
   }
@@ -229,6 +210,10 @@ function initButtons() {
       }, false);
       button.addEventListener('mouseout', function() {
         postMessage(button, 'button_blur');
+      }, false);
+      postMessage(button, 'button_hover');  
+      button.addEventListener('click', function(){
+        postMessage(button, 'alreadyBought?');
       }, false);
     }
     button.style.position = 'relative';
