@@ -201,6 +201,9 @@ function initButtons() {
       invDiv.style.left = '0';
       invDiv.style.top = '0';
       invDiv.style.opacity = '0';
+      button.style.position = 'relative';
+      button.style.overflow = 'hidden';
+      button.style.display = 'inline-block';
       button.appendChild(invDiv);
     }
     if (button.className.indexOf('in-new-page') === -1) {
@@ -216,9 +219,6 @@ function initButtons() {
         postMessage(button, 'alreadyBought?');
       }, false);
     }
-    button.style.position = 'relative';
-    button.style.overflow = 'hidden';
-    button.style.display = 'inline-block';
     loadBtn();
   }
 
