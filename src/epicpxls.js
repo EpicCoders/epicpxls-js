@@ -102,7 +102,7 @@ function initButtons() {
     }
     for (var i = 0; i < allHTMLTags.length; i++) {
       var classes = allHTMLTags[i].className.toString().split(' ');
-      if (['epicpxls-buy-button', 'epicpxls-sample-button', 'epicpxls-buy-button-custom'].indexOf(classes[0]) !== -1) {
+      if (['epicpxls-buy-button', 'epicpxls-buy-button-custom', 'epicpxls-sample-button', 'epicpxls-sample-button-custom'].indexOf(classes[0]) !== -1) {
         var activated = allHTMLTags[i].className.toString().indexOf('activated') !== -1 ? true : false;
         if (!activated) {
           allHTMLTags[i].className += ' activated';
@@ -121,10 +121,15 @@ function initButtons() {
     setDocumentOverflow();
   }
 
+  //check if the button is for a sample
+  function isSample(e) {
+    var classes = e.classList;
+    return classes.contains('epicpxls-sample-button') || classes.contains('epicpxls-sample-button-custom');
+  }
+
   function showIframe(e) {
     e.preventDefault();
     showLoading();
-    var is_sample = e.currentTarget.classList.contains('epicpxls-sample-button')
     var href = e.currentTarget.getAttribute('data-href');
     if ('href' in e.currentTarget.attributes) {
       href = e.currentTarget.attributes.href.value;
@@ -134,7 +139,7 @@ function initButtons() {
     var id = href.substring(href.indexOf('/items/') + 7).split('/')[0];
     href = href.substring(0, href.indexOf('/items/') + 7) + id;
 
-    var additional_path = is_sample ? '/iframe?product_type=sample' : '/iframe/'
+    var additional_path = isSample(e.currentTarget) ? '/iframe?product_type=sample' : '/iframe/';
     iframe.setAttribute('src', href + additional_path);
     iframe.style.width = '100%';
     iframe.style.height = '100%';
@@ -181,14 +186,13 @@ function initButtons() {
       }
     }
     button.className += ' load_started';
-    var is_sample = button.classList.contains('epicpxls-sample-button')
     var url = button.getAttribute('data-href');
     if ('href' in button.attributes) {
       url = button.attributes.href.value;
     }
     var id = url.substring(url.indexOf('/items/') + 7).split('/')[0];
     url = url.substring(0, url.indexOf('/items/') + 1);
-    if (id !== 'undefined' && button.className.indexOf('epicpxls-buy-button-custom') === -1) {
+    if (id !== 'undefined' && button.className.indexOf('epicpxls-buy-button-custom') === -1 && button.className.indexOf('epicpxls-sample-button-custom') === -1) {
       var bW = 200,
           bH = 42;
       button.style.width = bW + 'px';
@@ -197,7 +201,7 @@ function initButtons() {
       var ifr = button.getElementsByTagName('iframe')[0],
           invDiv = document.createElement('div');
 
-      var additional_path = is_sample ? '/button?product_type=sample' : '/button'
+      var additional_path = isSample(button) ? '/button?product_type=sample' : '/button';
       ifr.src = url + 'items/' + id + additional_path;
       invDiv.style.width = '200px';
       invDiv.style.height = '50px';
